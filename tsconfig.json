@@ -1,0 +1,11 @@
+/// <reference types="@figma/plugin-typings" />
+
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": ["es2017"], 
+    "strict": true,
+    "types": ["@figma/plugin-typings"]
+  }
+}
+

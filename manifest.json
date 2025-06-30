@@ -1,0 +1,21 @@
+{
+  "name": "try out",
+  "id": "1521017119565781336",
+  "api": "1.0.0",
+  "main": "code.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "documentAccess": "dynamic-page",
+  "editorType": [
+    "figma"
+  ],
+  "ui": "ui.html",
+  "networkAccess": {
+    "allowedDomains": [
+      "https://image.tmdb.org",
+      "https://www.gstatic.com",
+      "https://firebase.googleapis.com",
+      "https://firestore.googleapis.com"
+    ]
+  }
+}
