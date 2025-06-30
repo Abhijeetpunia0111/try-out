@@ -31,19 +31,24 @@
 <head>
   <title>Movie Autofill</title>
   <style>
-    body { font-family: sans-serif; padding: 16px; 
-    width: 90%}
+    body { 
+      font-family: sans-serif; 
+      padding: 16px; 
+      width: 90%;
+    }
     .movie-card {
       box-shadow: #d9d9d9 2px 20px 7px -17px;
-    position: relative;
-    top: 20;
-    border: 1px solid #e3e3e3;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    background: #f9f9f9;
+      position: relative;
+      top: 20;
+      border: 1px solid #e3e3e3;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      background: #f9f9f9;
     }
-    .movie-card h4 { margin: 0 0 6px 0; }
+    .movie-card h4 { 
+      margin: 0 0 6px 0; 
+    }
     .fill-btn {
       margin-top: 8px;
       padding: 6px 12px;
@@ -57,43 +62,72 @@
       background: #45a049;
     }
     .header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    gap: 10px;
-}
-    button#searchBtn {
-      
-    position: relative;
-    padding: 12px 44px;
-    border-radius: 10px;
-    font-size: 16px;
-    background: #2b7bb4;
-    height: 110%;
-    color: white;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    box-shadow: #8686863b -1px 7px 15px 2px;
-    transition: background 0.3s ease;
-    
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      gap: 10px;
     }
-   
+    button#searchBtn {
+      position: relative;
+      padding: 12px 44px;
+      border-radius: 10px;
+      font-size: 16px;
+      background: #2b7bb4;
+      height: 110%;
+      color: white;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      box-shadow: #8686863b -1px 7px 15px 2px;
+      transition: background 0.3s ease;
+    }
+    /* Floating Button Responsive Styling */
+    .floating-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background: #e63946;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 1000;
+      transition: background 0.3s ease, transform 0.2s ease;
+      font-size: 14px;
+    }
+    .floating-btn:hover {
+      background: #d62828;
+      transform: scale(1.05);
+    }
+    @media (max-width: 500px) {
+      .floating-btn {
+        padding: 10px 16px;
+        font-size: 12px;
+        bottom: 15px;
+        right: 15px;
+      }
+    }
+    @media (max-width: 350px) {
+      .floating-btn {
+        padding: 8px 12px;
+        font-size: 10px;
+        bottom: 10px;
+        right: 10px;
+      }
+    }
   </style>
 </head>
 <body>
 
 <h3>Search Movies</h3>
-<div class="header"> <input id="searchInput" type="text" placeholder="Enter title or genre" style="width: 80%;
-    padding: 15px;
-    border-radius: 8px;
-    border: solid 1px #d1d1d1;
-    box-shadow: #8686863b -1px 7px 15px 2px;
-    font-size: 14px;"  />
-<button id="searchBtn">Search</button>
+<div class="header"> 
+  <input id="searchInput" type="text" placeholder="Enter title or genre" style="width: 80%; padding: 15px; border-radius: 8px; border: solid 1px #d1d1d1; box-shadow: #8686863b -1px 7px 15px 2px; font-size: 14px;"  />
+  <button id="searchBtn">Search</button>
 </div>
-
 
 <div id="results" style="margin-top: 16px;"></div>
 
@@ -101,14 +135,14 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
   import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-   const firebaseConfig = {
-      apiKey: "AIzaSyDDTqY7QAPYFxwNfrPMZ72h4ITNB5THpJQ",
-      authDomain: "quickplay-5fec4.firebaseapp.com",
-      projectId: "quickplay-5fec4",
-      storageBucket: "quickplay-5fec4.appspot.com",
-      messagingSenderId: "468647212457",
-      appId: "1:468647212457:web:748aa93f88491d95fe80b8"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyDDTqY7QAPYFxwNfrPMZ72h4ITNB5THpJQ",
+    authDomain: "quickplay-5fec4.firebaseapp.com",
+    projectId: "quickplay-5fec4",
+    storageBucket: "quickplay-5fec4.appspot.com",
+    messagingSenderId: "468647212457",
+    appId: "1:468647212457:web:748aa93f88491d95fe80b8"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -116,6 +150,9 @@
   const searchBtn = document.getElementById('searchBtn');
   const searchInput = document.getElementById('searchInput');
   const resultsDiv = document.getElementById('results');
+  const bulkUpdateBtn = document.getElementById('bulkUpdateBtn');
+
+  let lastSearchResults = [];
 
   searchBtn.onclick = async () => {
     const query = searchInput.value.trim().toLowerCase();
@@ -134,6 +171,7 @@
       }
     });
 
+    lastSearchResults = results;
     renderResults(results);
   };
 
@@ -160,7 +198,19 @@
       resultsDiv.appendChild(card);
     });
   }
+
+  bulkUpdateBtn.onclick = () => {
+    if (lastSearchResults.length === 0) {
+      alert("Please perform a search before bulk update.");
+      return;
+    }
+    parent.postMessage({ pluginMessage: { type: 'bulk-fill', data: lastSearchResults } }, '*');
+  };
 </script>
+
+<button id="bulkUpdateBtn" class="floating-btn">
+  Bulk Update
+</button>
 
 </body>
 </html>
