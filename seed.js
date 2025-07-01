@@ -394,6 +394,7 @@ const movies = [
     Rating: "Not Rated",
     genres: ["Crime", "Action", "Drama"]
   }
+  
 
 ];
 

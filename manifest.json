@@ -15,7 +15,9 @@
       "https://image.tmdb.org",
       "https://www.gstatic.com",
       "https://firebase.googleapis.com",
-      "https://firestore.googleapis.com"
+      "https://firestore.googleapis.com",
+      "https://image-resizer-cloud.api.tmcms.quickplay.com",
+      "https://raw.githubusercontent.com"
     ]
   }
 }
