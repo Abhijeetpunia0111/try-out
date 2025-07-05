@@ -32,9 +32,9 @@ const movies = [
     Title: "28 Year Later",
     Description: "A thrilling sci-fi adventure through space and time.",
     Images: {
-      "16:9": "https://image.tmdb.org/t/p/original/2y0I6CDIgq0CsFabMPTJOJNg4Eg.jpg",
+      "16:9": "https://raw.githubusercontent.com/Abhijeetpunia0111/try-out/refs/heads/main/posters/28-year-later-16x9.webp",
       "1:1": "",
-      "2:3": "https://raw.githubusercontent.com/Abhijeetpunia0111/try-out/refs/heads/main/posters/28-days-later-2x3.jpg"
+      "2:3": "https://raw.githubusercontent.com/Abhijeetpunia0111/try-out/refs/heads/main/posters/28-year-later-2x3.webp"
     },
     Rating: "PG",
     genres: ["SciFi", "Adventure", "Action"]
