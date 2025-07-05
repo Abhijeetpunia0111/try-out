@@ -89,8 +89,14 @@ for (const node of parent.children) {
                     if (node.name === "Description" && movie.Description) {
                         node.characters = movie.Description;
                     }
+                    if (node.name === "Tag" && movie.Tag) {
+                        node.characters = movie.Tag;
+                    }
                     if (node.name === "Genres" && Array.isArray(movie.genres)) {
                         node.characters = movie.genres.join(" · ");
+                    }
+                    if (node.name === "Language" && Array.isArray(movie.Language)) {
+                        node.characters = movie.Language.join(" · ");
                     }
                     if (node.name === "Rating" && movie.Rating) {
                         node.characters = movie.Rating;
