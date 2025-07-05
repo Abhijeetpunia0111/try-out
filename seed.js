@@ -17,12 +17,12 @@ const db = getFirestore(app);
 const movies = [
   {
     id: "Movie_01",
-    Title: "28 Year Later",
+    Title: "Loki: The Time Traveler",
     Description: "A thrilling sci-fi adventure through space and time.",
     Images: {
-      "16:9": "https://image.tmdb.org/t/p/original/2y0I6CDIgq0CsFabMPTJOJNg4Eg.jpg",
+      "16:9": "https://images.fanart.tv/fanart/marvels-loki-60ab7fd642798.jpg",
       "1:1": "",
-      "2:3": "https://image.tmdb.org/t/p/original/361hRZoG91Nw6qXaIKuGoogQjix.jpg"
+      "2:3": "https://images.fanart.tv/fanart/marvels-loki-6055a2272c4b6.jpg"
     },
     Rating: "PG",
     genres: ["SciFi", "Adventure", "Action"]
@@ -34,7 +34,7 @@ const movies = [
     Images: {
       "16:9": "https://image.tmdb.org/t/p/original/2y0I6CDIgq0CsFabMPTJOJNg4Eg.jpg",
       "1:1": "",
-      "2:3": "https://image.tmdb.org/t/p/original/361hRZoG91Nw6qXaIKuGoogQjix.jpg"
+      "2:3": "https://images.fanart.tv/fanart/28-days-later-5224d408436b2.jpg"
     },
     Rating: "PG",
     genres: ["SciFi", "Adventure", "Action"]

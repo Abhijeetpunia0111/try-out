@@ -34,7 +34,6 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
 
-        // Cards can be FRAME, GROUP, COMPONENT, INSTANCE
         const childCards = parentFrame.children.filter(c => isContainer(c));
 
         if (childCards.length === 0) {
@@ -52,7 +51,7 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 
-// Check if a node is a valid container (FRAME, GROUP, COMPONENT, INSTANCE)
+// Check for valid container types
 function isContainer(node) {
     return (
         node.type === "FRAME" ||
@@ -66,15 +65,20 @@ function applyMovieToChildren(parent, movie) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!parent || !("children" in parent)) return;
 
-        const allowedImageNames = ["2:3", "16:9", "1:1"];
+        const allowedImageNames = ["2:3", "16:9", "1:1", "7:2", "3:1"];
 
         recursiveUpdate(parent, movie, allowedImageNames);
     });
 }
 
-// Deep recursive search inside each card for TEXT and RECTANGLE layers
+// Recursively apply updates to child nodes
 function recursiveUpdate(node, movie, allowedImageNames) {
-    if (node.type === "RECTANGLE") {
+    if (
+        node.type === "RECTANGLE" || node.type === "FRAME" ||
+        node.type === "GROUP" ||
+        node.type === "INSTANCE" ||
+        node.type === "COMPONENT"
+    ) {
         const nodeName = node.name.trim();
         if (allowedImageNames.includes(nodeName) && movie.Images && movie.Images[nodeName]) {
             const imageUrl = movie.Images[nodeName];
