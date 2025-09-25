@@ -1,5 +1,5 @@
 "use strict";
-// Full Updated code.js with Bulk Movie Apply, Safe Type Checking
+// Full Updated code.ts with Bulk Movie Apply, Safe Type Checking
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10,15 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 figma.showUI(__html__, { width: 400, height: 600 });
-figma.ui.onmessage = function (msg) { return __awaiter(void 0, void 0, void 0, function* () {
+figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
     if (msg.type === 'fill-data') {
         const movie = msg.data;
         const selection = figma.currentPage.selection[0];
-        if (!selection || selection.type !== 'FRAME' && selection.type !== 'GROUP' && selection.type !== 'INSTANCE' && selection.type !== 'COMPONENT') {
+        if (!selection || selection.type !== 'FRAME') {
             figma.notify("Please select a valid parent frame.");
             return;
         }
-        yield applyMovieToChildren(selection, movie);
+        applyMovieToChildren(selection, movie);
         figma.notify("Movie data applied successfully!");
     }
     if (msg.type === 'bulk-fill') {
@@ -28,17 +28,20 @@ figma.ui.onmessage = function (msg) { return __awaiter(void 0, void 0, void 0, f
             figma.notify("Please select a valid rail frame, group, component, or instance.");
             return;
         }
-        const itemFrames = rail.children.filter(function (n) { return n.type === "FRAME" || n.type === "GROUP" || n.type === "INSTANCE" || n.type === "COMPONENT"; });
-        const fillCount = Math.min(itemFrames.length, movies.length);
-
-for (let i = 0; i < fillCount; i++) {
-    yield applyMovieToChildren(itemFrames[i], movies[i]);
-}
-
-figma.notify(`Applied ${fillCount} movie(s) to ${itemFrames.length} frame(s).`);
-
+        const itemFrames = rail.children.filter((n) => n.type === "FRAME" ||
+            n.type === "GROUP" ||
+            n.type === "INSTANCE" ||
+            n.type === "COMPONENT");
+        // if (itemFrames.length < movies.length) {
+        //   figma.notify("Not enough child frames to apply all movies.");
+        //   return;
+        // }
+        for (let i = 0; i < movies.length; i++) {
+            applyMovieToChildren(itemFrames[i], movies[i]);
+        }
+        figma.notify("Bulk movie data applied!");
     }
-}); };
+});
 function hasChildren(node) {
     return (node.type === "FRAME" ||
         node.type === "GROUP" ||
@@ -47,39 +50,37 @@ function hasChildren(node) {
 }
 function applyMovieToChildren(parent, movie) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!parent || !("children" in parent)) return;
-
         for (const node of parent.children) {
-
-           const allowedNames = ["2:3", "16:9", "1:1", "7:2", "3:1"];
-
-for (const node of parent.children) {
-    if (node.type === "RECTANGLE" || node.type === "FRAME" || node.type === "INSTANCE" || node.type === "COMPONENT") {
-        const nodeName = node.name.trim();
-        if (allowedNames.includes(nodeName) && movie.Images && movie.Images[nodeName]) {
-            const imageUrl = movie.Images[nodeName];
-            console.log(`🖼️ Applying image to rectangle ${nodeName}:`, imageUrl);
-
-            if (imageUrl) {
-                try {
-                    const imageBytes = yield fetch(imageUrl).then(res => res.arrayBuffer());
-                    const imageHash = figma.createImage(new Uint8Array(imageBytes)).hash;
-                    const fills = [{
-                        type: "IMAGE",
-                        scaleMode: "FILL",
-                        imageHash
-                    }];
-                    node.fills = fills;
-                    console.log(`✅ Image applied to rectangle ${nodeName}`);
-                } catch (err) {
-                    console.log(`❌ Image load error for ${nodeName}:`, err);
+            console.log(`Visiting node: ${node.name} of type ${node.type}`);
+            console.log(`Visiting movie: ${movie["2:3"]} of type ${movie["2:3"]}`, movie.Images['2:3']);
+            if (node.type === "FRAME" ||
+                node.type === "GROUP" ||
+                node.type === "INSTANCE" ||
+                node.type === "RECTANGLE" ||
+                node.type === "COMPONENT") {
+                const nodeName = node.name.trim();
+                console.log(`Visiting movie: `, movie.Images[nodeName]);
+                const imageUrl = movie["Images"] ? movie["Images"][nodeName] : null;
+                console.log(`Processing node: ${node.name} with image URL: ${imageUrl}`);
+                if (imageUrl) {
+                    try {
+                        const imageBytes = yield fetch(imageUrl).then(res => res.arrayBuffer());
+                        const imageHash = figma.createImage(new Uint8Array(imageBytes)).hash;
+                        const shape = node;
+                        if (shape && "fills" in shape && Array.isArray(shape.fills)) {
+                            const fills = [{
+                                    type: "IMAGE",
+                                    scaleMode: "FILL",
+                                    imageHash
+                                }];
+                            shape.fills = fills;
+                        }
+                    }
+                    catch (err) {
+                        console.log("Image load error:", err);
+                    }
                 }
             }
-        }
-    }
-}
-
-
             if (node.type === "TEXT") {
                 try {
                     yield figma.loadFontAsync(node.fontName);
@@ -89,23 +90,21 @@ for (const node of parent.children) {
                     if (node.name === "Description" && movie.Description) {
                         node.characters = movie.Description;
                     }
-                    if (node.name === "Tag" && movie.Tag) {
-                        node.characters = movie.Tag;
-                    }
                     if (node.name === "Genres" && Array.isArray(movie.genres)) {
-                        node.characters = movie.genres.join(" · ");
+                        node.characters = movie.genres.join(" - ");
                     }
-                    if (node.name === "Language" && Array.isArray(movie.Language)) {
-                        node.characters = movie.Language.join(" · ");
+                    if (node.name === "Language" && Array.isArray(movie.languages)) {
+                        node.characters = movie.languages.join(" - ");
                     }
                     if (node.name === "Rating" && movie.Rating) {
                         node.characters = movie.Rating;
                     }
-                } catch (err) {
+                }
+                catch (err) {
                     console.log(`❌ Font load error for ${node.name}:`, err);
                 }
             }
-
+            // Recursively check deeper children
             if (hasChildren(node)) {
                 applyMovieToChildren(node, movie);
             }

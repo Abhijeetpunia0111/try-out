@@ -26,14 +26,14 @@ figma.ui.onmessage = async (msg) => {
     }
 
     const itemFrames = rail.children.filter((n): n is FrameNode => n.type === "FRAME" ||
-    n.type === "GROUP" ||
-    n.type === "INSTANCE" ||
-    n.type === "COMPONENT");
+      n.type === "GROUP" ||
+      n.type === "INSTANCE" ||
+      n.type === "COMPONENT");
 
-    if (itemFrames.length < movies.length) {
-      figma.notify("Not enough child frames to apply all movies.");
-      return;
-    }
+    // if (itemFrames.length < movies.length) {
+    //   figma.notify("Not enough child frames to apply all movies.");
+    //   return;
+    // }
 
     for (let i = 0; i < movies.length; i++) {
       applyMovieToChildren(itemFrames[i], movies[i]);
@@ -54,17 +54,24 @@ function hasChildren(node: SceneNode): node is FrameNode | GroupNode | InstanceN
 
 async function applyMovieToChildren(parent: FrameNode | GroupNode | InstanceNode | ComponentNode, movie: any) {
   for (const node of parent.children) {
+    console.log(`Visiting node: ${node.name} of type ${node.type}`);  
+    console.log(`Visiting movie: ${movie["2:3"]} of type ${movie["2:3"]}`, movie.Images['2:3']);  
     if (node.type === "FRAME" ||
-    node.type === "GROUP" ||
-    node.type === "INSTANCE" ||
-    node.type === "COMPONENT" && node.name in movie.Images) {
-      const imageUrl = movie.Images[node.name];
+      node.type === "GROUP" ||
+      node.type === "INSTANCE" ||
+      node.type === "RECTANGLE" ||
+      node.type === "COMPONENT") {
+      const nodeName = node.name.trim();
+      console.log(`Visiting movie: `, movie.Images[nodeName]);  
+      const imageUrl = movie["Images"] ? movie["Images"][nodeName] : null;
+
+      console.log(`Processing node: ${node.name} with image URL: ${imageUrl}`); 
       if (imageUrl) {
         try {
           const imageBytes = await fetch(imageUrl).then(res => res.arrayBuffer());
           const imageHash = figma.createImage(new Uint8Array(imageBytes)).hash;
 
-          const shape = node.findOne(n => n.type === "RECTANGLE" || n.type === "ELLIPSE"  || n.type === "INSTANCE" || n.type === "FRAME"  || n.type === "COMPONENT") as RectangleNode | null;
+          const shape = node as RectangleNode | FrameNode | GroupNode | InstanceNode | ComponentNode;
 
           if (shape && "fills" in shape && Array.isArray(shape.fills)) {
             const fills: ImagePaint[] = [{
