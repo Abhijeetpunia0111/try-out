@@ -25,7 +25,10 @@ figma.ui.onmessage = async (msg) => {
       return;
     }
 
-    const itemFrames = rail.children.filter((n): n is FrameNode => n.type === "FRAME");
+    const itemFrames = rail.children.filter((n): n is FrameNode => n.type === "FRAME" ||
+    n.type === "GROUP" ||
+    n.type === "INSTANCE" ||
+    n.type === "COMPONENT");
 
     if (itemFrames.length < movies.length) {
       figma.notify("Not enough child frames to apply all movies.");
@@ -51,14 +54,17 @@ function hasChildren(node: SceneNode): node is FrameNode | GroupNode | InstanceN
 
 async function applyMovieToChildren(parent: FrameNode | GroupNode | InstanceNode | ComponentNode, movie: any) {
   for (const node of parent.children) {
-    if (node.type === "FRAME" && node.name in movie.Images) {
+    if (node.type === "FRAME" ||
+    node.type === "GROUP" ||
+    node.type === "INSTANCE" ||
+    node.type === "COMPONENT" && node.name in movie.Images) {
       const imageUrl = movie.Images[node.name];
       if (imageUrl) {
         try {
           const imageBytes = await fetch(imageUrl).then(res => res.arrayBuffer());
           const imageHash = figma.createImage(new Uint8Array(imageBytes)).hash;
 
-          const shape = node.findOne(n => n.type === "RECTANGLE") as RectangleNode | null;
+          const shape = node.findOne(n => n.type === "RECTANGLE" || n.type === "ELLIPSE"  || n.type === "INSTANCE" || n.type === "FRAME"  || n.type === "COMPONENT") as RectangleNode | null;
 
           if (shape && "fills" in shape && Array.isArray(shape.fills)) {
             const fills: ImagePaint[] = [{
@@ -88,6 +94,9 @@ async function applyMovieToChildren(parent: FrameNode | GroupNode | InstanceNode
 
         if (node.name === "Genres" && Array.isArray(movie.genres)) {
           node.characters = movie.genres.join(" - ");
+        }
+        if (node.name === "Language" && Array.isArray(movie.languages)) {
+          node.characters = movie.languages.join(" - ");
         }
 
         if (node.name === "Rating" && movie.Rating) {

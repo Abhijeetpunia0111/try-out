@@ -28,7 +28,7 @@ figma.ui.onmessage = function (msg) { return __awaiter(void 0, void 0, void 0, f
             figma.notify("Please select a valid rail frame, group, component, or instance.");
             return;
         }
-        const itemFrames = rail.children.filter(function (n) { return n.type === "FRAME"; });
+        const itemFrames = rail.children.filter(function (n) { return n.type === "FRAME" || n.type === "GROUP" || n.type === "INSTANCE" || n.type === "COMPONENT"; });
         const fillCount = Math.min(itemFrames.length, movies.length);
 
 for (let i = 0; i < fillCount; i++) {
